@@ -2,6 +2,8 @@ import os
 from datetime import datetime, date
 from services.pdf_service import generar_pdf_ventas
 import requests
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask import (
     Flask,
     jsonify,
@@ -28,14 +30,31 @@ app.config["SECRET_KEY"] = os.getenv(
     "clave_temporal_smartgastro"
 )
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "DATABASE_URL",
-    "sqlite:///smartgastro.db"
+    "sqlite:///" + os.path.join(BASE_DIR, "smartgastro.db")
 )
-
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
+
+
+
+
+
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["300 per hour"]
+)
+
+
+
+
+
 
 ubicacion_actual = {
     "latitud": -34.6037,
@@ -230,6 +249,7 @@ def obtener_nombre_ubicacion(latitud, longitud):
 
 @app.route("/api/ubicacion", methods=["POST"])
 @login_requerido
+@limiter.limit("20 per minute")
 def guardar_ubicacion():
 
     global ubicacion_actual
@@ -255,7 +275,7 @@ def guardar_ubicacion():
 # =========================
 
 @app.route("/login", methods=["GET", "POST"])
-
+@limiter.limit("10 per minute")
 def login():
 
     if request.method == "POST":
@@ -293,6 +313,7 @@ def logout():
 # =========================
 @app.route("/ventas/pdf/<periodo>")
 @login_requerido
+@limiter.limit("10 per minute")
 def descargar_pdf_ventas(periodo):
 
     hoy = date.today()
@@ -474,10 +495,14 @@ def obtener_productos():
 
 @app.route("/api/productos", methods=["POST"])
 @login_requerido
+@limiter.limit("40 per minute")
 def agregar_producto():
 
-    datos = request.json
 
+
+
+    datos = request.json
+    
     try:
         nuevo_producto = Producto(
             nombre=datos["nombre"],
@@ -543,7 +568,7 @@ def actualizar_producto(id_producto):
 @app.route("/productos/vender/<int:id_producto>", methods=["POST"])
 @login_requerido
 def vender_producto(id_producto):
-
+    
     producto = Producto.query.get_or_404(id_producto)
 
     try:

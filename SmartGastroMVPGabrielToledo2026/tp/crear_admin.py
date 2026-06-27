@@ -4,21 +4,27 @@ from werkzeug.security import generate_password_hash
 
 
 with app.app_context():
+    db.create_all()
 
-    email_admin = "admin@smartgastro.com"
+    email = "admin@smartgastro.com"
+    password = "admin123"
 
-    usuario_existente = Usuario.query.filter_by(email=email_admin).first()
+    usuario = Usuario.query.filter_by(email=email).first()
 
-    if usuario_existente:
-        print("El usuario admin ya existe.")
+    if usuario:
+        usuario.nombre = "Administrador"
+        usuario.password_hash = generate_password_hash(password)
+        print("Admin actualizado.")
     else:
-        admin = Usuario(
+        usuario = Usuario(
             nombre="Administrador",
-            email=email_admin,
-            password_hash=generate_password_hash("admin123")
+            email=email,
+            password_hash=generate_password_hash(password)
         )
+        db.session.add(usuario)
+        print("Admin creado.")
 
-        db.session.add(admin)
-        db.session.commit()
+    db.session.commit()
 
-        print("Usuario admin creado correctamente.")
+    print("Email:", email)
+    print("Password:", password)
