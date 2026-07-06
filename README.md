@@ -6,7 +6,7 @@ Sistema de gestión gastronómica desarrollado como proyecto académico. Permite
 
 ### Pantalla Principal
 
-![Pantalla Principal]((SmartGastroMVPGabrielToledo2026/tp/images/2.png)
+![Pantalla Principal](SmartGastroMVPGabrielToledo2026/tp/images/2.png)
 
 ### Gestión del Sistema
 
