@@ -4,9 +4,9 @@ Sistema de gestión gastronómica desarrollado como proyecto académico. Permite
 
 ## 📸 Capturas
 
-### Pantalla Principal
+###Login
 
-![Pantalla Principal](SmartGastroMVPGabrielToledo2026/tp/images/2.png)
+![Pantalla Principal](SmartGastroMVPGabrielToledo2026/tp/images/1.png)
 
 ### Pantalla Principal
 
